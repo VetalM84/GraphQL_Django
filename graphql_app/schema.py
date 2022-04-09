@@ -32,16 +32,25 @@ class Query(graphene.ObjectType):
     students = graphene.List(StudentType)
 
     def resolve_teacher(self, info, **kwargs):
-        id = kwargs.get("id", None)
-        return Teacher.objects.get(pk=id) if id else None
+        num = kwargs.get("id", None)
+        try:
+            return Teacher.objects.get(pk=num)
+        except Teacher.DoesNotExist:
+            return None
 
     def resolve_subject(self, info, **kwargs):
-        id = kwargs.get("id", None)
-        return Subject.objects.get(pk=id) if id else None
+        num = kwargs.get("id", None)
+        try:
+            return Subject.objects.get(pk=num)
+        except Subject.DoesNotExist:
+            return None
 
     def resolve_student(self, info, **kwargs):
-        id = kwargs.get("id", None)
-        return Student.objects.get(pk=id) if id else None
+        num = kwargs.get("id", None)
+        try:
+            return Student.objects.get(pk=num)
+        except Student.DoesNotExist:
+            return None
 
     def resolve_teachers(self, info):
         return Teacher.objects.all()
