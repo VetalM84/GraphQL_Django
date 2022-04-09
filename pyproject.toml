@@ -1,0 +1,20 @@
+[tool.black]
+line_length = 100
+exclude = '(\.git|\.mypy_cache|venv|migrations|settings.py)'
+target_version = ["py39"]
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+fail_under = 50
+skip_covered = true
+show_missing = true
+
+[tool.isort]
+combine_as_imports = true
+include_trailing_comma = true
+line_length = 100
+multi_line_output = 3
+reverse_relative = true
+use_parentheses = true
