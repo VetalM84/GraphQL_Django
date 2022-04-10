@@ -32,4 +32,3 @@ class StudentType(DjangoObjectType):
             "full_name": ["exact", "icontains", "istartswith"],
         }
         interfaces = (graphene.relay.Node,)
-
