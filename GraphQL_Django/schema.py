@@ -15,4 +15,4 @@ class Query(schema.Query, graphene.ObjectType):
 #     pass
 
 
-scheme = graphene.Schema(query=Query)
+schema = graphene.Schema(query=Query)
