@@ -6,6 +6,62 @@ from graphql_app.models import Student, Subject, Teacher
 from graphql_app.types import StudentType, SubjectType, TeacherType
 
 
+class SubjectInput(graphene.InputObjectType):
+    name = graphene.String()
+    id = graphene.ID()
+
+
+class CreateSubject(graphene.Mutation):
+    class Arguments:
+        input = SubjectInput(required=True)
+
+    ok = graphene.Boolean()
+    subject = graphene.Field(SubjectType)
+
+    @classmethod
+    def mutate(cls, root, info, input=None):
+        ok = True
+        subject_instance = Subject.objects.create(name=input.name)
+        return cls(ok=ok, subject=subject_instance)
+
+
+class UpdateSubject(graphene.Mutation):
+    class Arguments:
+        id = graphene.Int(required=True)
+        input = SubjectInput(required=True)
+
+    ok = graphene.Boolean()
+    subject = graphene.Field(SubjectType)
+
+    @classmethod
+    def mutate(cls, root, info, id, input=None):
+        ok = False
+        try:
+            subject_instance = Subject.objects.get(pk=id)
+        except Subject.DoesNotExist:
+            return cls(ok=ok, subject=None)
+
+        ok = True
+        subject_instance.name = input.name
+        return cls(ok=ok, subject=subject_instance)
+
+
+class DeleteSubject(graphene.Mutation):
+    class Arguments:
+        id = graphene.Int(required=True)
+
+    ok = graphene.Boolean()
+
+    @classmethod
+    def mutate(cls, root, info, id):
+        try:
+            subject_instance = Subject.objects.get(pk=id)
+            subject_instance.delete()
+            return cls(ok=True)
+        except Teacher.DoesNotExist:
+            return cls(ok=True)
+
+
 class StudentInput(graphene.InputObjectType):
     full_name = graphene.String()
     subject = graphene.List(graphene.Int)
@@ -136,3 +192,7 @@ class Mutation(graphene.ObjectType):
     create_student = CreateStudent.Field()
     update_student = UpdateStudent.Field()
     delete_student = DeleteStudent.Field()
+
+    create_subject = CreateSubject.Field()
+    update_subject = UpdateSubject.Field()
+    delete_subject = DeleteSubject.Field()
