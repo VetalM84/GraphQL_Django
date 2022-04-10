@@ -7,23 +7,23 @@ from graphql_app.types import StudentType, SubjectType, TeacherType
 
 
 class TeacherInput(graphene.InputObjectType):
-    id = graphene.ID()
     full_name = graphene.String()
+    subject = graphene.List(graphene.Int)
+    id = graphene.ID()
 
 
 class CreateTeacher(graphene.Mutation):
     class Arguments:
-        # input = TeacherInput()
-        full_name = graphene.String(required=True)
-        id = graphene.ID()
+        input = TeacherInput(required=True)
 
     ok = graphene.Boolean()
     teacher = graphene.Field(TeacherType)
 
     @classmethod
-    def mutate(cls, root, info, full_name, id=None):
+    def mutate(cls, root, info, input=None):
         ok = True
-        teacher_instance = Teacher.objects.create(full_name=full_name)
+        teacher_instance = Teacher.objects.create(full_name=input.full_name)
+        teacher_instance.subject.add(*input.subject)
         return cls(ok=ok, teacher=teacher_instance)
 
 
@@ -36,7 +36,7 @@ class UpdateTeacher(graphene.Mutation):
     teacher = graphene.Field(TeacherType)
 
     @classmethod
-    def mutate(cls, info, id, input=None):
+    def mutate(cls, root, info, id, input=None):
         ok = False
         try:
             teacher_instance = Teacher.objects.get(pk=id)
@@ -45,6 +45,7 @@ class UpdateTeacher(graphene.Mutation):
 
         ok = True
         teacher_instance.full_name = input.full_name
+        teacher_instance.subject.add(*input.subject)
         teacher_instance.save()
         return cls(ok=ok, teacher=teacher_instance)
 
