@@ -26,7 +26,7 @@ class SubjectType(DjangoObjectType):
 class StudentType(DjangoObjectType):
     class Meta:
         model = Student
-        fields = ("id", "full_name", "subject")
+        fields = ("id", "full_name", "avg_grade", "subject")
         filter_fields = {
             "id": ["exact"],
             "full_name": ["exact", "icontains", "istartswith"],
