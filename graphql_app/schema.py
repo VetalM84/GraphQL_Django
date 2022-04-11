@@ -1,3 +1,5 @@
+"""Schema for graphql_app Models for GraphQL API."""
+
 import graphene
 from graphene_django.filter import DjangoFilterConnectionField
 
@@ -27,6 +29,8 @@ class SubjectConnection(graphene.relay.Connection):
 
 
 class Query(graphene.ObjectType):
+    """Query for GraphQL API."""
+
     teacher = graphene.relay.Node.Field(TeacherType)
     teachers = DjangoFilterConnectionField(TeacherType)
 
@@ -44,6 +48,7 @@ class Query(graphene.ObjectType):
     # students = graphene.List(StudentType)
 
     def resolve_teacher(self, info, **kwargs):
+        """Resolve Teacher by id."""
         num = kwargs.get("id", None)
         try:
             return Teacher.objects.get(pk=num)
@@ -51,6 +56,7 @@ class Query(graphene.ObjectType):
             return None
 
     def resolve_subject(self, info, **kwargs):
+        """Resolve Subject by id."""
         num = kwargs.get("id", None)
         try:
             return Subject.objects.get(pk=num)
@@ -58,6 +64,7 @@ class Query(graphene.ObjectType):
             return None
 
     def resolve_student(self, info, **kwargs):
+        """Resolve Student by id."""
         num = kwargs.get("id", None)
         try:
             return Student.objects.get(pk=num)
@@ -65,10 +72,13 @@ class Query(graphene.ObjectType):
             return None
 
     def resolve_teachers(self, info, **kwargs):
+        """Resolve Teachers list."""
         return Teacher.objects.all()
 
     def resolve_subjects(self, info, **kwargs):
+        """Resolve Subjects list."""
         return Subject.objects.all()
 
     def resolve_students(self, info, **kwargs):
+        """Resolve Students list."""
         return Student.objects.all()

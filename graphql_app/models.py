@@ -2,6 +2,8 @@ from django.db import models
 
 
 class Teacher(models.Model):
+    """Teacher model."""
+
     full_name = models.CharField(max_length=70, verbose_name="Full name")
     subject = models.ManyToManyField(
         "Subject", related_name="teacher_subject", verbose_name="Subject"
@@ -17,6 +19,8 @@ class Teacher(models.Model):
 
 
 class Subject(models.Model):
+    """Subject model."""
+
     name = models.CharField(max_length=100, verbose_name="Subject name")
 
     def __str__(self):
@@ -29,6 +33,8 @@ class Subject(models.Model):
 
 
 class Student(models.Model):
+    """Student model."""
+
     full_name = models.CharField(max_length=70, verbose_name="Full name")
     subject = models.ManyToManyField(
         "Subject", related_name="student_subject", verbose_name="Subject"

@@ -4,6 +4,8 @@ from .models import Student, Subject, Teacher
 
 
 class TeacherAdmin(admin.ModelAdmin):
+    """Teacher admin panel settings."""
+
     list_display = ("id", "full_name")
     search_fields = ("full_name",)
     list_display_links = ("id", "full_name")
@@ -11,12 +13,16 @@ class TeacherAdmin(admin.ModelAdmin):
 
 
 class SubjectAdmin(admin.ModelAdmin):
+    """Subject admin panel settings."""
+
     list_display = ("id", "name")
     search_fields = ("name",)
     list_display_links = ("id", "name")
 
 
 class StudentAdmin(admin.ModelAdmin):
+    """Student admin panel settings."""
+
     list_display = ("id", "full_name", "avg_grade")
     search_fields = ("full_name",)
     list_display_links = ("id", "full_name")
