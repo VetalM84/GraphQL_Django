@@ -17,8 +17,6 @@ class TeacherTestCase(GraphQLTestCase):
         self.subject_2 = Subject.objects.create(name='Subject 2')
         self.teacher_1.subject.add(self.subject_1, self.subject_2)
         self.teacher_2.subject.add(self.subject_1)
-        # Student.objects.create(full_name='Student 1', subject=Subject.objects.create(name='Subject 3'))
-        # Student.objects.create(full_name='Student 2', subject=Subject.objects.create(name='Subject 4'))
 
     def test_resolve_teachers(self):
         """Test list of all teachers."""
@@ -95,6 +93,99 @@ class TeacherTestCase(GraphQLTestCase):
             }
             """,
             op_name='UpdateTeacherMutation',
+        )
+        content = json.loads(response.content)
+        print(content)
+        self.assertResponseNoErrors(response)
+
+
+class StudentTestCase(GraphQLTestCase):
+    """Test cases for Student model."""
+
+    def setUp(self):
+        """Create test data."""
+        self.student_1 = Student.objects.create(full_name='Student 1', avg_grade=50.5)
+        self.student_2 = Student.objects.create(full_name='Student 2', avg_grade=74.0)
+        self.subject_1 = Subject.objects.create(name='Subject 1')
+        self.subject_2 = Subject.objects.create(name='Subject 2')
+        self.student_1.subject.add(self.subject_1, self.subject_2)
+        self.student_2.subject.add(self.subject_1)
+
+    def test_resolve_students(self):
+        """Test list of all students."""
+        response = self.query(
+            """
+            query { students { edges { node { id fullName avgGrade subject { edges { node { id name } } } } } } }            
+            """,
+        )
+        content = json.loads(response.content)
+        print(content)
+        self.assertResponseNoErrors(response)
+        self.assertEqual(len(content['data']['students']['edges']), 2)
+
+    def test_resolve_students_filter(self):
+        """Test list of students with filter (first 2)."""
+        response = self.query(
+            """
+            query { students (first: 2) { edges { node { id fullName avgGrade subject { edges { node { id } } } } } } }            
+            """,
+        )
+        content = json.loads(response.content)
+        print(content)
+        self.assertResponseNoErrors(response)
+
+    def test_resolve_student(self):
+        """Test a single student by id."""
+        response = self.query(
+            """
+            query student ($id: ID!) { 
+                student (id: $id) { id fullName avgGrade subject { edges { node { id } } } } 
+                }
+            """,
+            op_name='student',
+            variables={"id": 'U3R1ZGVudFR5cGU6MQ=='},
+        )
+        content = json.loads(response.content)
+        print(content)
+        self.assertResponseNoErrors(response)
+
+    def test_create_student(self):
+        """Test mutation to create student with subjects assigned."""
+        response = self.query(
+            """
+            mutation CreateStudentMutation {
+              createStudent(input: {fullName: "Test Create", avgGrade: 55.5, subject: [1, 2]}) {
+                ok student { id fullName avgGrade subject { edges { node { id name } } } } }
+            }
+            """,
+            op_name='CreateStudentMutation',
+        )
+        content = json.loads(response.content)
+        print(content)
+        self.assertResponseNoErrors(response)
+
+    def test_delete_student(self):
+        """Test mutation to delete student by id."""
+        response = self.query(
+            """
+            mutation DeleteStudentMutation { deleteStudent(id: 1) { ok } }
+            """,
+            op_name='DeleteStudentMutation',
+        )
+        content = json.loads(response.content)
+        print(content)
+        self.assertResponseNoErrors(response)
+
+    def test_update_student(self):
+        """Test mutation to update a student by id."""
+        response = self.query(
+            """
+            mutation UpdateStudentMutation {
+              updateStudent(id: 1, input: {fullName: "From Test" avgGrade: 100.0 subject: [1, 2]}) {
+                ok student { id fullName avgGrade subject { edges { node { id name } } } } }
+            }
+            """,
+            op_name='UpdateStudentMutation',
         )
         content = json.loads(response.content)
         print(content)
