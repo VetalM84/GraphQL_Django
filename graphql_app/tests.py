@@ -190,3 +190,92 @@ class StudentTestCase(GraphQLTestCase):
         content = json.loads(response.content)
         print(content)
         self.assertResponseNoErrors(response)
+
+
+class SubjectTestCase(GraphQLTestCase):
+    """Test cases for Subject model."""
+
+    def setUp(self):
+        """Create test data."""
+        self.subject_1 = Subject.objects.create(name='Subject 1')
+        self.subject_2 = Subject.objects.create(name='Subject 2')
+
+    def test_resolve_subjects(self):
+        """Test list of all subjects."""
+        response = self.query(
+            """
+            query { subjects { edges { node { id name } } } }            
+            """,
+        )
+        content = json.loads(response.content)
+        print(content)
+        self.assertResponseNoErrors(response)
+        self.assertEqual(len(content['data']['subjects']['edges']), 2)
+
+    def test_resolve_subjects_filter(self):
+        """Test list of subjects with filter (first 2)."""
+        response = self.query(
+            """
+            query { subjects (first: 2) { edges { node { id name } } } }            
+            """,
+        )
+        content = json.loads(response.content)
+        print(content)
+        self.assertResponseNoErrors(response)
+
+    def test_resolve_subject(self):
+        """Test a single subject by id."""
+        response = self.query(
+            """
+            query subject ($id: ID!) { 
+                subject (id: $id) { id name } 
+                }
+            """,
+            op_name='subject',
+            variables={"id": 'U3ViamVjdFR5cGU6MQ=='},
+        )
+        content = json.loads(response.content)
+        print(content)
+        self.assertResponseNoErrors(response)
+
+    def test_create_subject(self):
+        """Test mutation to create subject."""
+        response = self.query(
+            """
+            mutation CreateSubjectMutation {
+              createSubject(input: {name: "Test Create"}) {
+                ok subject { id name } }
+            }
+            """,
+            op_name='CreateSubjectMutation',
+        )
+        content = json.loads(response.content)
+        print(content)
+        self.assertResponseNoErrors(response)
+
+    def test_delete_subject(self):
+        """Test mutation to delete subject by id."""
+        response = self.query(
+            """
+            mutation DeleteSubjectMutation { deleteSubject(id: 1) { ok } }
+            """,
+            op_name='DeleteSubjectMutation',
+        )
+        content = json.loads(response.content)
+        print(content)
+        self.assertResponseNoErrors(response)
+
+    def test_update_subject(self):
+        """Test mutation to update a subject by id."""
+        response = self.query(
+            """
+            mutation UpdateSubjectMutation {
+              updateSubject(id: 1, input: {name: "From Test"}) {
+                ok subject { id name } }
+            }
+            """,
+            op_name='UpdateSubjectMutation',
+        )
+        content = json.loads(response.content)
+        print(content)
+        self.assertResponseNoErrors(response)
