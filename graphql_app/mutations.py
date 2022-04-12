@@ -1,8 +1,6 @@
 """CRUD for the GraphQL API."""
 
 import graphene
-from django.contrib.auth import get_user_model
-from graphql_jwt.shortcuts import create_refresh_token, get_token
 
 from graphql_app.models import Student, Subject, Teacher
 from graphql_app.types import StudentType, SubjectType, TeacherType
